@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "create:zinc_block"
+    },
+    {
+      "tag": "create:seats"
+    }
+  ],
+  "result": {
+    "id": "ca_harness:harness",
+    "count": 1
+  }
+}

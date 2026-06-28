@@ -1,0 +1,8 @@
+{
+  "parent": "ca_harness:block/harness/harness",
+  "textures": {
+    "0": "create:block/seat/top_white",
+    "1": "create:block/andesite_block",
+    "2": "create:block/andesite_casing"
+  }
+}

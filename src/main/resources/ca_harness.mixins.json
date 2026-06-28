@@ -1,0 +1,26 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "mixinextras": {
+    "minVersion": "0.5.3"
+  },
+  "plugin": "com.mumu17.ca_harness.mixin.MixinPlugin",
+  "package": "com.mumu17.ca_harness.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "PlayerMixin",
+    "UpdatePlayerUsingHandlePacketMixin"
+  ],
+  "client": [
+    "CameraMixin",
+    "ClientHandleHandlerMixin",
+    "LocalPlayerMixin",
+    "PlayerHoldingHandleRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
