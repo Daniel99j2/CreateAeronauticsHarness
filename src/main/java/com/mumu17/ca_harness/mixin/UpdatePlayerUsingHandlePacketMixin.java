@@ -1,11 +1,10 @@
 package com.mumu17.ca_harness.mixin;
 
-import com.llamalad7.mixinextras.expression.Definition;
-import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mumu17.ca_harness.block.HarnessBlockEntity;
 import dev.simulated_team.simulated.network.packets.UpdatePlayerUsingHandlePacket;
 import foundry.veil.api.network.handler.ServerPacketContext;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,12 +17,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class UpdatePlayerUsingHandlePacketMixin {
     @Shadow
     @Final
-    private boolean remove;
+    private float desiredRange;
 
-    @Definition(id = "getBlockEntity", method = "Lnet/minecraft/world/level/Level;getBlockEntity(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/entity/BlockEntity;")
-    @Expression("? = ?.getBlockEntity(?)")
-    @Inject(method = "handle", at = @At(value = "MIXINEXTRAS:EXPRESSION", shift = At.Shift.AFTER), cancellable = true)
-    public void ca_harness$handle(ServerPacketContext ctx, CallbackInfo ci, @Local(type = BlockEntity.class, name = "be") BlockEntity be) {
-        if (be instanceof HarnessBlockEntity && remove) ci.cancel();
+    @Inject(method = "handle", at = @At(value = "INVOKE", target = "Ldev/simulated_team/simulated/content/blocks/handle/ServerHandleHoldingHandler;stopHolding(Lnet/minecraft/world/entity/player/Player;)V"), cancellable = true)
+    public void ca_harness$handle0(ServerPacketContext ctx, CallbackInfo ci, @Local(name = "be") BlockEntity be) {
+        if (be instanceof HarnessBlockEntity) ci.cancel();
+    }
+
+    @Inject(method = "handle", at = @At(value = "INVOKE", target = "Ldev/simulated_team/simulated/content/blocks/handle/HandleBlockEntity;stopGrabbingServer(Ljava/util/UUID;)V"), cancellable = true)
+    public void ca_harness$handle1(ServerPacketContext ctx, CallbackInfo ci, @Local(name = "be") BlockEntity be) {
+        if (be instanceof HarnessBlockEntity) ci.cancel();
+    }
+
+    @Inject(method = "handle", at = @At(value = "INVOKE", target = "Ldev/simulated_team/simulated/content/blocks/handle/HandleBlockEntity;startGrabbingServer(Ljava/util/UUID;F)V"), cancellable = true)
+    public void ca_harness$handle2(ServerPacketContext ctx, CallbackInfo ci, @Local(name = "be") BlockEntity be, @Local(name = "player") ServerPlayer player) {
+        if (be instanceof HarnessBlockEntity hbe) {
+            hbe.startGrabbingServer(player.getUUID(), this.desiredRange);
+            ci.cancel();
+        }
     }
 }

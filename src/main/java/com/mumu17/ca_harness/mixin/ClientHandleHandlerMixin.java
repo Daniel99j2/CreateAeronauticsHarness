@@ -1,5 +1,6 @@
 package com.mumu17.ca_harness.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mumu17.ca_harness.block.HarnessBlockEntity;
@@ -26,6 +27,11 @@ public class ClientHandleHandlerMixin {
 
     @WrapWithCondition(method = "activeTick", at = @At(value = "INVOKE", target = "Ldev/simulated_team/simulated/content/blocks/handle/ClientHandleHandler;sendUpdate(Z)V"))
     public boolean ca_harness$activeTick(ClientHandleHandler instance, boolean remove, @Local(argsOnly = true) Level level, @Local(name = "interactionPos") BlockPos blockPos) {
-        return !(level.getBlockEntity(blockPos) instanceof HarnessBlockEntity && movingSubLevel);
+        return !(level.getBlockEntity(blockPos) instanceof HarnessBlockEntity);
+    }
+
+    @ModifyExpressionValue(method = "activeTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;isDetached()Z"))
+    public boolean ca_harness$activeTick(boolean original, @Local(argsOnly = true) Level level, @Local(name = "interactionPos") BlockPos blockPos) {
+        return original && !(level.getBlockEntity(blockPos) instanceof HarnessBlockEntity);
     }
 }
