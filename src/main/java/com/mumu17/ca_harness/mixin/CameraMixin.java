@@ -21,18 +21,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Camera.class)
 public abstract class CameraMixin {
 
-    @Shadow private Vec3 position;
+    @Shadow
+    protected abstract void setPosition(double p_90585_, double p_90586_, double p_90587_);
 
     @Inject(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V", shift = At.Shift.AFTER))
     private void applySableZoom(BlockGetter level, Entity entity, boolean detached, boolean thirdPerson, float partialTick, CallbackInfo ci) {
-        if (!(entity instanceof Player player)) return;
-        if (((PlayerHarnessExtension) player).ca_harness$getHarnessPos() == null) return;
-
         Minecraft mc = Minecraft.getInstance();
+
+        if (mc.player == null || entity != mc.player) return;
+        if (((PlayerHarnessExtension) mc.player).ca_harness$getHarnessPos() == null) return;
+
 
         if (mc.options.getCameraType() != CameraType.THIRD_PERSON_BACK) return;
 
-        double maxDistance = 32.0;
+        double maxDistance = 16.0;
         double minDistance = 2.0;
 
         double zoom = getCollisionZoom((Camera)(Object)this, entity, maxDistance);
@@ -44,7 +46,7 @@ public abstract class CameraMixin {
 
         Vec3 targetPos = basePos.add(forward.scale(-zoom)).add(0, 1.5, 0);
 
-        this.position = this.position.lerp(targetPos, 0.2);
+        this.setPosition(targetPos.x, targetPos.y, targetPos.z);
     }
 
     @Unique
