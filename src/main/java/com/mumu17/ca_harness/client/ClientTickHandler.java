@@ -20,16 +20,16 @@ public class ClientTickHandler {
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         if (ModKeybinds.STOP_HARNESS.get().consumeClick()) {
-            reset();
+            reset(true);
         }
     }
 
     @SubscribeEvent
     public static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {
-        reset();
+        reset(true);
     }
 
-    public static void reset() {
+    public static void reset(boolean respond) {
         Minecraft mc = Minecraft.getInstance();
 
         if (mc.level == null) return;
@@ -39,7 +39,7 @@ public class ClientTickHandler {
 
         PlayerHarnessExtension playerHarnessExtension = (PlayerHarnessExtension) player;
         playerHarnessExtension.ca_harness$setHarnessPos(null);
-        VeilPacketManager.server().sendPacket(new UpdatePlayerUsingHarnessPacket(BlockPos.ZERO));
+        if(respond) VeilPacketManager.server().sendPacket(new UpdatePlayerUsingHarnessPacket(BlockPos.ZERO));
     }
 }
 

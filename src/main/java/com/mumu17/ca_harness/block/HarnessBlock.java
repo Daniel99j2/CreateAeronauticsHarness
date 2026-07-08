@@ -46,11 +46,12 @@ public class HarnessBlock extends HandleBlock implements IWrenchable {
         return ModBlockEntityTypes.HARNESS.get();
     }
 
-    public static void carryOn(Level level, BlockPos pos, Entity entity) {
+    public static void carryOn(Level level, BlockPos pos, Entity entity, boolean controlling) {
         if (level.isClientSide || !(entity instanceof ServerPlayer player))
             return;
         PlayerHarnessExtension playerHarnessExtension = (PlayerHarnessExtension) player;
         playerHarnessExtension.ca_harness$setHarnessPos(pos != BlockPos.ZERO ? pos : null);
+        playerHarnessExtension.ca_harness$setControlling(controlling);
         VeilPacketManager.player(player).sendPacket(new UpdateLocalPlayerUsingHarnessPacket(pos));
     }
 }

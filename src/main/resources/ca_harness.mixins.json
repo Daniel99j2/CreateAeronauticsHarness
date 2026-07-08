@@ -4,11 +4,18 @@
   "package": "com.mumu17.ca_harness.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ActiveSableCompanionMixin",
+    "CanFallAtLeastHelperMixin",
+    "EntityMixin",
+    "NoCollisionMixin",
+    "PlayerFlyAccessor",
     "PlayerMixin",
+    "ServerSubLevelMixin",
+    "SubLevelInterpolationMixin",
+    "SubLevelInterpolationMixin2",
     "UpdatePlayerUsingHandlePacketMixin"
   ],
   "client": [
-    "CameraMixin",
     "ClientHandleHandlerMixin",
     "LocalPlayerMixin",
     "PlayerHoldingHandleRendererMixin"
