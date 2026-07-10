@@ -1,12 +1,17 @@
 package com.mumu17.ca_harness.block;
 
 import com.mumu17.ca_harness.mixin_interface.PlayerHarnessExtension;
+import com.mumu17.ca_harness.mixin_interface.SubLevelHarnessData;
 import com.mumu17.ca_harness.register.ModBlockEntityTypes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
+import dev.ryanhcode.sable.Sable;
+import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.simulated_team.simulated.content.blocks.handle.HandleBlock;
+import dev.simulated_team.simulated.content.physics_staff.PhysicsStaffServerHandler;
 import foundry.veil.api.network.VeilPacketManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.DyeColor;
@@ -52,6 +57,10 @@ public class HarnessBlock extends HandleBlock implements IWrenchable {
         PlayerHarnessExtension playerHarnessExtension = (PlayerHarnessExtension) player;
         playerHarnessExtension.ca_harness$setHarnessPos(pos != BlockPos.ZERO ? pos : null);
         playerHarnessExtension.ca_harness$setControlling(controlling);
+        if(Sable.HELPER.getContaining(level, pos) instanceof ServerSubLevel serverSubLevel && serverSubLevel instanceof SubLevelHarnessData hd) {
+            if(PhysicsStaffServerHandler.get((ServerLevel) level).isLocked(serverSubLevel)) PhysicsStaffServerHandler.get((ServerLevel) level).toggleLock(serverSubLevel.getUniqueId());
+            hd.setCreateAeronauticsHarness$harnessedPlayer(player.getUUID());
+        }
         VeilPacketManager.player(player).sendPacket(new UpdateLocalPlayerUsingHarnessPacket(pos));
     }
 }

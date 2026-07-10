@@ -2,6 +2,7 @@ package com.mumu17.ca_harness.block;
 
 import com.mumu17.ca_harness.mixin_interface.PlayerHarnessExtension;
 import com.mumu17.ca_harness.mixin_interface.SubLevelHarnessData;
+import com.mumu17.ca_harness.mixin_interface.TempNoGravity;
 import dev.ryanhcode.sable.Sable;
 import dev.ryanhcode.sable.api.physics.constraint.ConstraintJointAxis;
 import dev.ryanhcode.sable.api.physics.constraint.FreeConstraintConfiguration;
@@ -15,6 +16,8 @@ import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import dev.simulated_team.simulated.content.blocks.handle.HandleBlockEntity;
 import dev.simulated_team.simulated.config.server.physics.SimPhysics;
+import dev.simulated_team.simulated.content.physics_staff.PhysicsStaffServerHandler;
+import dev.simulated_team.simulated.index.SimItems;
 import dev.simulated_team.simulated.service.SimConfigService;
 import foundry.veil.api.network.VeilPacketManager;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -30,9 +33,11 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -51,6 +56,7 @@ public class HarnessBlockEntity extends HandleBlockEntity {
         assert Minecraft.getInstance().player != null;
         if(this.level.isClientSide && this.getBlockPos().equals(((PlayerHarnessExtension) Minecraft.getInstance().player).ca_harness$getHarnessPos())) {
             VeilPacketManager.server().sendPacket(new BodyRotationPacket(Minecraft.getInstance().player.yBodyRot));
+            VeilPacketManager.server().sendPacket(new LocalVelocityPacket(new Vector3f((float) Minecraft.getInstance().player.getDeltaMovement().x, (float) Minecraft.getInstance().player.getDeltaMovement().y, (float) Minecraft.getInstance().player.getDeltaMovement().z)));
         }
     }
 
@@ -119,6 +125,8 @@ public class HarnessBlockEntity extends HandleBlockEntity {
         if (constraint != null) {
             constraint.removeJoint();
         }
+        ServerSubLevel subLevel = (ServerSubLevel) Sable.HELPER.getContaining(this.getLevel(), this.getBlockPos());
+        if(Objects.requireNonNull(level.getPlayerByUUID(player)).getMainHandItem().is(SimItems.PHYSICS_STAFF) && subLevel != null && !PhysicsStaffServerHandler.get((ServerLevel) level).isLocked(subLevel)) PhysicsStaffServerHandler.get((ServerLevel) level).toggleLock(subLevel.getUniqueId());
     }
 
     @Override
@@ -171,9 +179,10 @@ public class HarnessBlockEntity extends HandleBlockEntity {
 //            }
             //VeilPacketManager.player((ServerPlayer) player).sendPacket(new PlayerTempGravityPacket(DimensionPhysicsData.getGravity(player.level()).y*DimensionPhysicsData.getUniversalDrag((ServerLevel) player.level())));
             VeilPacketManager.player((ServerPlayer) player).sendPacket(new PlayerTempGravityPacket(0));
+            ((TempNoGravity) player).setCreateAeronauticsHarness$tempGravity(0);
             //Sable.HELPER.getVelocity();
             //+DimensionPhysicsData.getGravity(player.level()).y*DimensionPhysicsData.getUniversalDrag((ServerLevel) player.level())
-            VeilPacketManager.player((ServerPlayer) player).sendPacket(new PlayerVelocityPacket(new Vec3(velocity.x, velocity.y, velocity.z).toVector3f(), true, true));
+            if(!PhysicsStaffServerHandler.get((ServerLevel) level).isLocked(subLevel)) VeilPacketManager.player((ServerPlayer) player).sendPacket( new PlayerVelocityPacket(new Vec3(velocity.x, velocity.y, velocity.z).toVector3f(), true, false));
 
             ServerSubLevelContainer container = SubLevelContainer.getContainer(subLevel.getLevel());
             SubLevelPhysicsSystem physicsSystem = container.physicsSystem();

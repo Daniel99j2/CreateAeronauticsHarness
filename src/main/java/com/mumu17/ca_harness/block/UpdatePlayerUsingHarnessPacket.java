@@ -2,6 +2,8 @@ package com.mumu17.ca_harness.block;
 
 import com.mumu17.ca_harness.CAHarness;
 import com.mumu17.ca_harness.mixin_interface.PlayerHarnessExtension;
+import com.mumu17.ca_harness.mixin_interface.SubLevelHarnessData;
+import dev.ryanhcode.sable.Sable;
 import dev.simulated_team.simulated.content.blocks.handle.ServerHandleHoldingHandler;
 import foundry.veil.api.network.handler.ServerPacketContext;
 import net.minecraft.core.BlockPos;
@@ -38,6 +40,9 @@ public record UpdatePlayerUsingHarnessPacket(BlockPos interactionPos) implements
             final BlockEntity be = level.getBlockEntity(harnessPos);
             if (be instanceof final HarnessBlockEntity hbe)
                 hbe.ca_harness$stopGrabbingServer(player.getUUID());
+            if(Sable.HELPER.getContaining(player.level(), harnessPos) instanceof SubLevelHarnessData hd) {
+                hd.setCreateAeronauticsHarness$harnessedPlayer(null);
+            }
         }
         playerHarnessExtension.ca_harness$setHarnessPos(null);
     }

@@ -1,5 +1,6 @@
 package com.mumu17.ca_harness.mixin;
 
+import com.mumu17.ca_harness.mixin_interface.PlayerHarnessExtension;
 import com.mumu17.ca_harness.mixin_interface.SubLevelHarnessData;
 import dev.ryanhcode.sable.ActiveSableCompanion;
 import dev.ryanhcode.sable.api.physics.force.ForceGroup;
@@ -33,10 +34,11 @@ import java.util.UUID;
 public abstract class ActiveSableCompanionMixin {
     @Inject(method = "getVelocity(Lnet/minecraft/world/level/Level;Ldev/ryanhcode/sable/companion/SubLevelAccess;Lorg/joml/Vector3dc;Lorg/joml/Vector3d;)Lorg/joml/Vector3d;", at = @At(value = "HEAD"), cancellable = true)
     private void usePlayerVelocity(Level level, SubLevelAccess subLevel, Vector3dc pos, Vector3d dest, CallbackInfoReturnable<Vector3d> cir) {
-        if(subLevel instanceof SubLevelHarnessData hd && hd.getCreateAeronauticsHarness$harnessedPlayer() != null) {
+        if(subLevel instanceof SubLevelHarnessData hd && hd.getCreateAeronauticsHarness$harnessedPlayer() != null && level instanceof ServerLevel serverLevel) {
             Player player = level.getPlayerByUUID(hd.getCreateAeronauticsHarness$harnessedPlayer());
+            PlayerHarnessExtension harnessExtension = (PlayerHarnessExtension) player;
             if(player != null) {
-                cir.setReturnValue(new Vector3d(player.getDeltaMovement().x, player.getDeltaMovement().y, player.getDeltaMovement().z));
+                cir.setReturnValue(new Vector3d(harnessExtension.ca_harness$getLastDelta().x, harnessExtension.ca_harness$getLastDelta().y, harnessExtension.ca_harness$getLastDelta().z).div(DimensionPhysicsData.getUniversalDrag(serverLevel)));
             }
         }
     }
