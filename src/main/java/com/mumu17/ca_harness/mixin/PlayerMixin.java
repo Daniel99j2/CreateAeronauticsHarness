@@ -19,12 +19,6 @@ public class PlayerMixin implements PlayerHarnessExtension, TempNoGravity {
     BlockPos ca_harness$harnessPos = null;
 
     @Unique
-    boolean ca_harness$isControlling = false;
-
-    @Unique
-    Vec3 ca_harness$lastDelta = Vec3.ZERO;
-
-    @Unique
     double createAeronauticsHarness$tempNoGravity = Double.MAX_VALUE;
 
     @Override
@@ -33,30 +27,9 @@ public class PlayerMixin implements PlayerHarnessExtension, TempNoGravity {
     }
 
     @Override
-    public void ca_harness$setControlling(boolean controlling) {
-        ca_harness$isControlling = controlling;
-    }
-
-    @Override
-    public Vec3 ca_harness$getLastDelta() {
-        return ca_harness$lastDelta;
-    }
-
-    @Override
-    public void ca_harness$setLastDelta(Vec3 delta) {
-        ca_harness$lastDelta = delta;
-    }
-
-    @Override
-    public boolean ca_harness$isControlling() {
-        return ca_harness$isControlling;
-    }
-
-    @Override
     public BlockPos ca_harness$getHarnessPos() {
         return ca_harness$harnessPos;
     }
-
 
     @Override
     public double getCreateAeronauticsHarness$tempGravity() {

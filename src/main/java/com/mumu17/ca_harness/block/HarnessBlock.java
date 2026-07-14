@@ -56,7 +56,6 @@ public class HarnessBlock extends HandleBlock implements IWrenchable {
             return;
         PlayerHarnessExtension playerHarnessExtension = (PlayerHarnessExtension) player;
         playerHarnessExtension.ca_harness$setHarnessPos(pos != BlockPos.ZERO ? pos : null);
-        playerHarnessExtension.ca_harness$setControlling(controlling);
         if(Sable.HELPER.getContaining(level, pos) instanceof ServerSubLevel serverSubLevel && serverSubLevel instanceof SubLevelHarnessData hd) {
             if(PhysicsStaffServerHandler.get((ServerLevel) level).isLocked(serverSubLevel)) PhysicsStaffServerHandler.get((ServerLevel) level).toggleLock(serverSubLevel.getUniqueId());
             hd.setCreateAeronauticsHarness$harnessedPlayer(player.getUUID());
